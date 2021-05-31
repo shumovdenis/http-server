@@ -49,7 +49,7 @@ public class Request {
         if (method.equals("Get")) {
             nameValuePairs = getQueryParam(parts[1]);
         } else {
-            char[] buffer = parseBodyPost(headers);
+            char[] buffer = parseBodyPost(bufferedReader, headers);
             nameValuePairs = getPostParams(String.valueOf(buffer));
         }
 
@@ -76,8 +76,10 @@ public class Request {
         return URLEncodedUtils.parse(path, Charset.defaultCharset(), '?');
     }
 
-    private static char[] parseBodyPost(Map<String, String> headers) {
-        return new char[Integer.parseInt(headers.get("Content-Length"))];
+    public static char[] parseBodyPost(BufferedReader in, Map<String, String> headers) throws IOException {
+        char[] buffer = new char[Integer.parseInt(headers.get("Content-Length"))];
+        in.read(buffer);
+        return buffer;
     }
 
     private static List<NameValuePair> getPostParams(String body) {
